@@ -7,9 +7,9 @@ if __name__ == '__main__':
         # Data Collection & Cleaning
         tweets = t.Tweets()
         tweets._fetch()
-        label Redo:
+        label .Redo:
         tweets._model()
     except Exception as e:
-        goto Redo
+        goto .Redo
         pass
     exit("App Closes")
