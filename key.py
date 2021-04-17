@@ -20,4 +20,4 @@ _db_result = "result"
 # Tweet Set
 _tweet_set = 1000
 # Tweet max fetched
-_tweet_max_count = 1000
+_tweet_max_count = 50000
