@@ -100,7 +100,7 @@ class Tweets(object):
             # Updates Positive & Negative Score to DB
             if _count % key._tweet_set == 0:
                 self.__pos_polarity = self.__pos_polarity / key._tweet_set
-                _score = (self.__pos_polarity + abs(self.__neg_polarity)) // 2
+                _score = (self.__pos_polarity + abs(self.__neg_polarity)) / 2
                 _obj = {"$set": {"pos_polarity": self.__pos_polarity, "neg_polarity": self.__neg_polarity, "polarity": _score}}
                 print(_obj)
                 _db._update({"_id": _count // key._tweet_set}, _obj)
