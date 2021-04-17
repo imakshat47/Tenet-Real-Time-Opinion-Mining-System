@@ -1,7 +1,7 @@
 import os
 from os import environ
 
-_tweet_max_count = 50000
+_tweet_max_count = 50
 
 _consumer_key = environ['C_KEY']
 _consumer_secret = environ['C_SEC']
