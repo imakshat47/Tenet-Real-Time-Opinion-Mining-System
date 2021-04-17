@@ -87,10 +87,12 @@ class Tweets(object):
             trans_text = trans_module._translate(data['tweet'], data['lang'])
             trans_polarity = sa._score(trans_text)
             set_data = {"$set": {"trans_text": trans_text,"polarity": polarity, "trans_polarity": trans_polarity}}
+            print(set_data)
             __db._update({"_id": data['_id']}, set_data)
             self.__polarity = self.__polarity + trans_polarity
             _count += 1            
             if _count // key._tweet_set == 0:
                 self.__polarity = self.__polarity / key._tweet_set
+                print(self.__polarity)
                 _db._insert({"final_score": self.__polarity})
                 self.__polarity = 0
