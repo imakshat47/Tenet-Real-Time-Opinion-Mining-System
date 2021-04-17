@@ -5,16 +5,18 @@ from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
 import src.Mongodb as db
 import src.PreProcess as preProcess
+import src.Translate as trans
+import src.SentimentAnalysis as senti
+
+
 # Listen to stream and return it
-
-
 class StdOutListener(StreamListener):
     def __init__(self):
         super().__init__()
         self.__count = 0
         self.__max_tweets = key._tweet_max_count
         self.__pre = preProcess.PreProcess()
-        self.__db = db.MongoDB(key._db_name,key._db_document)
+        self.__db = db.MongoDB(key._db_name, key._db_document)
 
     def on_timeout(self):
         print("TimeOut !!")
@@ -51,8 +53,6 @@ class StdOutListener(StreamListener):
         return True
 
 # Fetch Tweets from Tweepy
-
-
 class Tweets(object):
     def __init__(self):
         # Variables that contain the user credentials to access Twitter API
@@ -63,8 +63,34 @@ class Tweets(object):
         self.__auth = OAuthHandler(self.__consumer_key, self.__consumer_secret)
         self.__auth.set_access_token(
             self.__access_token, self.__access_token_secret)
+        # Final Polarity
+        self.__polarity = 0
 
-    def _fetch(self, _track=["Modi", "Covid", "IPL", "Stock Market"]):        
+    def _fetch(self, _track=["Modi", "Covid", "IPL", "Stock Market"]):
         __stream = Stream(self.__auth, StdOutListener())
         __stream.filter(track=_track)
         print("Tweets Collected.")
+
+    def _model(self):
+        # Mongo Instance
+        __db = db.MongoDB(key._db_name, key._db_document)
+        tweets = __db._find()        
+        sa = senti.SentimentAnalysis()
+        # Translator Instance
+        trans_module = trans.Translate()        
+        # result
+        _db = db.MongoDB(key._db_name, key._db_result)
+        _count = 0
+        # Data Loop
+        for data in tweets:
+            polarity = sa._score(data['tweet'])
+            trans_text = trans_module._translate(data['tweet'], data['lang'])
+            trans_polarity = sa._score(trans_text)
+            set_data = {"$set": {"trans_text": trans_text,"polarity": polarity, "trans_polarity": trans_polarity}}
+            __db._update({"_id": data['_id']}, set_data)
+            self.__polarity = self.__polarity + trans_polarity
+            _count += 1            
+            if _count // key._tweet_set == 0:
+                self.__polarity = self.__polarity / key._tweet_set
+                _db._insert({"final_score": self.__polarity})
+                self.__polarity = 0
