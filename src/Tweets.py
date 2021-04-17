@@ -53,6 +53,8 @@ class StdOutListener(StreamListener):
         return True
 
 # Fetch Tweets from Tweepy
+
+
 class Tweets(object):
     def __init__(self):
         # Variables that contain the user credentials to access Twitter API
@@ -74,10 +76,10 @@ class Tweets(object):
     def _model(self):
         # Mongo Instance
         __db = db.MongoDB(key._db_name, key._db_document)
-        tweets = __db._find()        
+        tweets = __db._find()
         sa = senti.SentimentAnalysis()
         # Translator Instance
-        trans_module = trans.Translate()        
+        trans_module = trans.Translate()
         # result
         _db = db.MongoDB(key._db_name, key._db_result)
         _count = 0
@@ -90,9 +92,9 @@ class Tweets(object):
             print(set_data)
             __db._update({"_id": data['_id']}, set_data)
             self.__polarity = self.__polarity + trans_polarity
-            _count += 1            
+            _count += 1
             if _count // key._tweet_set == 0:
                 self.__polarity = self.__polarity / key._tweet_set
                 print(self.__polarity)
-                _db._insert({"final_score": self.__polarity})
+                _db._insert({"_id": _count, "polarity": self.__polarity})
                 self.__polarity = 0
