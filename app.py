@@ -7,9 +7,9 @@ if __name__ == '__main__':
         # Data Collection & Cleaning
         tweets = t.Tweets()
         tweets._fetch()
+        REDU:
         tweets._model()
     except Exception as e:
-        print("App Error => ", e)        
-    finally:
-        tweets._model()
+        goto REDU
+        pass
     exit("App Closes")
