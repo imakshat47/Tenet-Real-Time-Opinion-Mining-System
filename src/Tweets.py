@@ -86,23 +86,26 @@ class Tweets(object):
         _count = 0
         # Data Loop
         for data in tweets:
-            polarity = sa._score(data['tweet'])
-            trans_text = trans_module._translate(data['tweet'], data['lang'])
-            trans_polarity = sa._score(trans_text)
-            set_data = {"$set": {"trans_text": trans_text,"polarity": polarity, "trans_polarity": trans_polarity}}
-            print(set_data)
-            __db._update({"_id": data['_id']}, set_data)
-            if trans_polarity > 0:
-                self.__pos_polarity = self.__pos_polarity + trans_polarity
-            else:
-                self.__neg_polarity = self.__neg_polarity + trans_polarity
-            _count += 1
-            # Updates Positive & Negative Score to DB
-            if _count % key._tweet_set == 0:
-                self.__pos_polarity = self.__pos_polarity / key._tweet_set
-                _score = (self.__pos_polarity + abs(self.__neg_polarity)) / 2
-                _obj = {"$set": {"pos_polarity": self.__pos_polarity, "neg_polarity": self.__neg_polarity, "polarity": _score}}
-                print(_obj)
-                _db._update({"_id": _count // key._tweet_set}, _obj)
-                self.__pos_polarity = 0
-                self.__neg_polarity = 0
+            try:
+                polarity = sa._score(data['tweet'])
+                trans_text = trans_module._translate(data['tweet'], data['lang'])
+                trans_polarity = sa._score(trans_text)
+                set_data = {"$set": {"trans_text": trans_text,"polarity": polarity, "trans_polarity": trans_polarity}}
+                print(set_data)
+                __db._update({"_id": data['_id']}, set_data)
+                if trans_polarity > 0:
+                    self.__pos_polarity = self.__pos_polarity + trans_polarity
+                else:
+                    self.__neg_polarity = self.__neg_polarity + trans_polarity
+                _count += 1
+                # Updates Positive & Negative Score to DB
+                if _count % key._tweet_set == 0:
+                    self.__pos_polarity = self.__pos_polarity / key._tweet_set
+                    _score = (self.__pos_polarity + abs(self.__neg_polarity)) / 2
+                    _obj = {"$set": {"pos_polarity": self.__pos_polarity, "neg_polarity": self.__neg_polarity, "polarity": _score}}
+                    print(_obj)
+                    _db._update({"_id": _count // key._tweet_set}, _obj)
+                    self.__pos_polarity = 0
+                    self.__neg_polarity = 0
+            except:
+                pass        
