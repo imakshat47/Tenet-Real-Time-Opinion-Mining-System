@@ -18,6 +18,6 @@ _db_document = "tweets"
 _db_result = "result"
 
 # Tweet Set
-_tweet_set = 1000
+_tweet_set = 20000
 # Tweet max fetched
-_tweet_max_count = 50000
+_tweet_max_count = 150000

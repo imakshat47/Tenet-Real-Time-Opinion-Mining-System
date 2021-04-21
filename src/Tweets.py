@@ -35,7 +35,7 @@ class StdOutListener(StreamListener):
             __lang = data['lang']
             __tweet = data['extended_tweet']['full_text']
         except:
-            return True        
+            return True
         # Data Cleaning
         __tweet = self.__pre._clean(__tweet)
         __tweet = self.__pre._emojis(__tweet, True)
@@ -72,10 +72,10 @@ class Tweets(object):
         __stream.filter(track=_track)
         print("Tweets Collected.")
 
-    def _model(self):
+    def _model(self, obj = None):
         # Mongo Instance
         __db = db.MongoDB(key._db_name, key._db_document)
-        tweets = __db._find({'polarity': {'$exists': False}})
+        tweets = __db._find(obj)
         sa = senti.SentimentAnalysis()
         # Translator Instance
         trans_module = trans.Translate()
@@ -86,9 +86,10 @@ class Tweets(object):
         for data in tweets:
             try:
                 polarity = sa._score(data['tweet'])
-                trans_text = trans_module._translate(data['tweet'], data['lang'])
+                trans_text = trans_module._translate(
+                    data['tweet'], data['lang'])
                 trans_polarity = sa._score(trans_text)
-                set_data = {"$set": {"trans_text": trans_text,"polarity": polarity, "trans_polarity": trans_polarity}}
+                set_data = {"$set": {"trans_text": trans_text, "polarity": polarity, "trans_polarity": trans_polarity}}
                 print(set_data)
                 __db._update({"_id": data['_id']}, set_data)
                 if trans_polarity > 0:
@@ -99,11 +100,14 @@ class Tweets(object):
                 # Updates Positive & Negative Score to DB
                 if((_count % key._tweet_set) == 0):
                     self.__pos_polarity = self.__pos_polarity / key._tweet_set
+                    self.__neg_polarity = self.__neg_polarity / key._tweet_set
                     _score = (self.__pos_polarity + abs(self.__neg_polarity)) / 2
-                    _obj = {"$set": {"pos_polarity": self.__pos_polarity, "neg_polarity": self.__neg_polarity, "polarity": _score}}
+                    # _obj = {"$set": {"pos_polarity": self.__pos_polarity, "neg_polarity": self.__neg_polarity, "polarity": _score}}
+                    _obj = {"_id": _count // key._tweet_set, "count": _count, "pos_polarity": self.__pos_polarity, "neg_polarity": self.__neg_polarity, "polarity": _score}
                     print(_obj)
-                    _db._update({"_id": _count // key._tweet_set}, _obj)
+                    # _db._update({"_id": _count // key._tweet_set}, _obj)
+                    _db._insert(_obj, True)
                     self.__pos_polarity = 0
                     self.__neg_polarity = 0
             except:
-                continue        
+                continue

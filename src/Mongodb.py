@@ -8,7 +8,9 @@ class MongoDB(object):
         __db = self.__client[client]
         self.__col = __db[db]
 
-    def _insert(self, obj):
+    def _insert(self, obj, checkIfexists = False):
+        if checkIfexists == True:
+            return self.__col.save(obj)
         self.__col.insert_one(obj)
 
     def _update(self, where_condition, set_data):
