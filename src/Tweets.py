@@ -35,9 +35,7 @@ class StdOutListener(StreamListener):
             __lang = data['lang']
             __tweet = data['extended_tweet']['full_text']
         except:
-            pass
-        if(__tweet == ''):
-            return True
+            return True        
         # Data Cleaning
         __tweet = self.__pre._clean(__tweet)
         __tweet = self.__pre._emojis(__tweet, True)
@@ -77,7 +75,7 @@ class Tweets(object):
     def _model(self):
         # Mongo Instance
         __db = db.MongoDB(key._db_name, key._db_document)
-        tweets = __db._find().sort({ _id: -1 })
+        tweets = __db._find()
         sa = senti.SentimentAnalysis()
         # Translator Instance
         trans_module = trans.Translate()
@@ -108,4 +106,4 @@ class Tweets(object):
                     self.__pos_polarity = 0
                     self.__neg_polarity = 0
             except:
-                pass        
+                continue        
