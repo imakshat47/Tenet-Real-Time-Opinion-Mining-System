@@ -59,7 +59,7 @@ class PreProcess(object):
 
         except Exception as e:
             print('PreProcessor Error => ', e)
-            return 
+            return " "
 
     # Handle Emojies
 
@@ -88,7 +88,7 @@ class PreProcess(object):
             return text
         except Exception as e:
             print('PreProcessor Error => ', e)
-            return 
+            return " "
 
     # Handle Coded Emojies
 
@@ -868,4 +868,4 @@ class PreProcess(object):
             return processed_text
 
         except:
-            return 
+            return " "

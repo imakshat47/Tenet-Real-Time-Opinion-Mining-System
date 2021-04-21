@@ -75,7 +75,7 @@ class Tweets(object):
     def _model(self):
         # Mongo Instance
         __db = db.MongoDB(key._db_name, key._db_document)
-        tweets = __db._find()
+        tweets = __db._find({'polarity': {'$exists': False}})
         sa = senti.SentimentAnalysis()
         # Translator Instance
         trans_module = trans.Translate()

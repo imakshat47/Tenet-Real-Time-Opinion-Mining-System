@@ -14,8 +14,10 @@ class MongoDB(object):
     def _update(self, where_condition, set_data):
         self.__col.update_one(where_condition, set_data)
 
-    def _find(self):
-        return self.__col.find().sort({ _id: -1 })
+    def _find(self, obj = None):
+        if obj == None:
+            return self.__col.find()
+        return self.__col.find(obj)
 
     def __del__(self):
         self.__client.close()
