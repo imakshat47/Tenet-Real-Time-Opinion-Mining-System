@@ -77,7 +77,7 @@ class Tweets(object):
     def _model(self):
         # Mongo Instance
         __db = db.MongoDB(key._db_name, key._db_document)
-        tweets = __db._find()
+        tweets = __db._find().sort({ _id: -1 })
         sa = senti.SentimentAnalysis()
         # Translator Instance
         trans_module = trans.Translate()
@@ -99,7 +99,7 @@ class Tweets(object):
                     self.__neg_polarity = self.__neg_polarity + trans_polarity
                 _count += 1
                 # Updates Positive & Negative Score to DB
-                if _count % key._tweet_set == 0:
+                if((_count % key._tweet_set) == 0):
                     self.__pos_polarity = self.__pos_polarity / key._tweet_set
                     _score = (self.__pos_polarity + abs(self.__neg_polarity)) / 2
                     _obj = {"$set": {"pos_polarity": self.__pos_polarity, "neg_polarity": self.__neg_polarity, "polarity": _score}}
