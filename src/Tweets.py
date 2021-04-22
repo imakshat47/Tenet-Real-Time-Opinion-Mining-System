@@ -99,8 +99,9 @@ class Tweets(object):
                     self.__neg_polarity = self.__neg_polarity + trans_polarity
                 _count += 1
                 print(_count)
+                print(_count % 10)
                 # Updates Positive & Negative Score to DB
-                _obj = {"_id": _count % 10, "count": _count, "pos_polarity": self.__pos_polarity,
+                _obj = {"_id": (int) _count % 10, "count": _count, "pos_polarity": self.__pos_polarity,
                         "neg_polarity": self.__neg_polarity, "polarity": _score}
                 print(_obj)
                 _db._insert(_obj, True)
