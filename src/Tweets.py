@@ -97,17 +97,20 @@ class Tweets(object):
                 else:
                     self.__neg_polarity = self.__neg_polarity + trans_polarity
                 _count += 1
-                # Updates Positive & Negative Score to DB
-                if((_count % key._tweet_set) == 0):
-                    self.__pos_polarity = self.__pos_polarity / key._tweet_set
-                    self.__neg_polarity = self.__neg_polarity / key._tweet_set
-                    _score = (self.__pos_polarity + abs(self.__neg_polarity)) / 2
-                    # _obj = {"$set": {"pos_polarity": self.__pos_polarity, "neg_polarity": self.__neg_polarity, "polarity": _score}}
-                    _obj = {"_id": _count // key._tweet_set, "count": _count, "pos_polarity": self.__pos_polarity, "neg_polarity": self.__neg_polarity, "polarity": _score}
-                    print(_obj)
-                    # _db._update({"_id": _count // key._tweet_set}, _obj)
-                    _db._insert(_obj, True)
-                    self.__pos_polarity = 0
-                    self.__neg_polarity = 0
+                # Updates Positive & Negative Score to DB            
+                _obj = {"_id": _count % 10, "count": _count, "pos_polarity": self.__pos_polarity, "neg_polarity": self.__neg_polarity, "polarity": _score}
+                print(_obj)                
+                _db._insert(_obj, True)                
+                # if((_count % key._tweet_set) == 0):
+                #     self.__pos_polarity = self.__pos_polarity / key._tweet_set
+                #     self.__neg_polarity = self.__neg_polarity / key._tweet_set
+                #     _score = (self.__pos_polarity + abs(self.__neg_polarity)) / 2
+                #     # _obj = {"$set": {"pos_polarity": self.__pos_polarity, "neg_polarity": self.__neg_polarity, "polarity": _score}}
+                #     _obj = {"_id": _count // key._tweet_set, "count": _count, "pos_polarity": self.__pos_polarity, "neg_polarity": self.__neg_polarity, "polarity": _score}
+                #     print(_obj)
+                #     # _db._update({"_id": _count // key._tweet_set}, _obj)
+                #     _db._insert(_obj, True)
+                #     self.__pos_polarity = 0
+                #     self.__neg_polarity = 0
             except:
                 continue
