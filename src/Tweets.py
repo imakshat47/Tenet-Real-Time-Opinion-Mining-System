@@ -93,9 +93,9 @@ class Tweets(object):
                 print(set_data)
                 __db._update({"_id": data['_id']}, set_data)
                 if trans_polarity > 0:
-                    self.__pos_polarity = self.__pos_polarity + trans_polarity
+                    self.__pos_polarity = trans_polarity
                 else:
-                    self.__neg_polarity = self.__neg_polarity + trans_polarity
+                    self.__neg_polarity = trans_polarity
                 _count += 1
                 print(_count)
                 _id = _count % 10
