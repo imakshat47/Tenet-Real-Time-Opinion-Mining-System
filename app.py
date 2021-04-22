@@ -6,7 +6,7 @@ if __name__ == '__main__':
     try:
         tweets = t.Tweets()
         # Data Collection & Cleaning
-        tweets._fetch()
+        # tweets._fetch()                       # fetch Tweets from web // 
         tweets._model({'polarity': {'$exists': False}})                 # to be removed in near future
         tweets._model()
     except Exception as e:
