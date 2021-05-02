@@ -27,3 +27,5 @@ _tweet_limit = 0
 
 # Tenet Results Saves on ID
 _tenet_record = "record"
+
+_sleep_time = 207

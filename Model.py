@@ -9,7 +9,7 @@ import src.Translate as trans
 
 class Model(object):
     # init method
-    def __init__(self):
+    def __init__(self, _obj=None):
         print("Model Loading...")
 
     def _run_heroku(self):
@@ -22,14 +22,13 @@ class Model(object):
         # Translator Instance
         self.trans_module = trans.Translate()
         # fetch tweets
-        tweets = self.__db._sorted_find({"polarity": None}, key._tweet_limit)
+        tweets = self.__db._sorted_find(_obj, key._tweet_limit)
         # print(tweets)
         # Data Loop
         threads = []
         for data in tweets:
             try:
                 print("Tweet => ", data)
-                sleep(7)
                 thread = threading.Thread(None, target=self.__middleware, args=(
                     data['tweet'], data['lang'], data['_id'],))
                 thread.start()
@@ -37,7 +36,8 @@ class Model(object):
                 print("Active Thread => ", threading.active_count())
                 if len(threads) == 10:
                     for thread in threads:
-                        print("Active Thread Left => ", threading.active_count())
+                        print("Active Thread Left => ",
+                              threading.active_count())
                         thread.join()
                     threads = []
             except:
@@ -59,19 +59,19 @@ class Model(object):
     # middleware for heroku
     def __middleware(self, text, lang_tag, id):
         print("-- Thread Set --")
-        sleep(277)
+        sleep(key._sleep_time)
         print("Thread Active Now!!")
         # result
         polarity = self.sa._score(text)
-        sleep(277)
+        sleep(key._sleep_time)
         trans_text = self.trans_module._translate(text, lang_tag)
-        sleep(277)
+        sleep(key._sleep_time)
         trans_polarity = self.sa._score(trans_text)
         set_data = {"$set": {"trans_text": trans_text,
                              "polarity": polarity, "trans_polarity": trans_polarity}}
         print(set_data)
         self.__db._update({"_id": id}, set_data)
-        sleep(277)
+        sleep(key._sleep_time)
         # Update Result
         _obj = self._db._find({"_id": key._tenet_record})
         if _obj != None:
@@ -91,5 +91,5 @@ class Model(object):
                 _obj[4] += 1
         self._db._update({"_id": key._tenet_record}, {
                          "$set": {"ordinals": _obj}})
-        print("-- Thread Ends --")
+        print("-- Thread End --")
         return None
