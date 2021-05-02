@@ -22,7 +22,7 @@ class Model(object):
         # Translator Instance
         self.trans_module = trans.Translate()
         # fetch tweets
-        tweets = self.__db._sorted_find(None, key._tweet_limit)
+        tweets = self.__db._sorted_find({polarity: null}, key._tweet_limit)
         # print(tweets)
         # Data Loop
         threads = []
@@ -39,8 +39,9 @@ class Model(object):
                         print("Active Thread Left => ", threading.active_count())
                         thread.join()
                     threads = []
-            except Exception as e:
+            except:
                 print("Error here => ", e)
+                sleep(120)
                 continue
         for thread in threads:
             print("Active Thread Left => ", threading.active_count())
@@ -57,19 +58,19 @@ class Model(object):
     # middleware for heroku
     def __middleware(self, text, lang_tag, id):
         print("-- Thread Set --")
-        sleep(1.5)
+        sleep(15)
         print("Thread Active Now!!")
         # result
         polarity = self.sa._score(text)
-        sleep(3.7)
+        sleep(37)
         trans_text = self.trans_module._translate(text, lang_tag)
-        sleep(1.7)
+        sleep(17)
         trans_polarity = self.sa._score(trans_text)
         set_data = {"$set": {"trans_text": trans_text,
                              "polarity": polarity, "trans_polarity": trans_polarity}}
         print(set_data)
         self.__db._update({"_id": id}, set_data)
-        sleep(1.1)
+        sleep(11)
         # Update Result
         _obj = self._db._find({"_id": key._tenet_record})
         if _obj != None:
@@ -91,26 +92,3 @@ class Model(object):
                          "$set": {"ordinals": _obj}})
         print("-- Thread Ends --")
         return None
-
-# //polarity = sa._score(data['tweet'])
-# //                trans_text = trans_module._translate(
-# //                    data['tweet'], data['lang'])
-# //                trans_polarity = sa._score(trans_text)
-# //                set_data = {"$set": {"trans_text": trans_text,
-# //                                     "polarity": polarity, "trans_polarity": trans_polarity}}
-# //                print(set_data)
-# //                __db._update({"_id": data['_id']}, set_data)
-# //                if trans_polarity > 0:
-# //                    self.__pos_polarity = trans_polarity
-# //                else:
-# //                    self.__neg_polarity = trans_polarity
-# //                _count += 1
-# //                print(_count)
-# //                _id = _count % 10
-# //                print(_id)
-# //                # Updates Positive & Negative Score to DB
-# //                _score = (self.__pos_polarity + abs(self.__neg_polarity)) / 2
-# //                _obj = {"_id": _id, "count": _count, "pos_polarity": self.__pos_polarity,
-# //                        "neg_polarity": self.__neg_polarity, "polarity": _score}
-# //                print(_obj)
-# //                _db._insert(_obj, True)
