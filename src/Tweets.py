@@ -5,8 +5,6 @@ from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
 import src.Mongodb as db
 import src.PreProcess as preProcess
-import src.Translate as trans
-import src.SentimentAnalysis as senti
 
 
 # Listen to stream and return it
@@ -71,52 +69,3 @@ class Tweets(object):
         __stream = Stream(self.__auth, StdOutListener())
         __stream.filter(track=_track)
         print("Tweets Collected.")
-
-    def _model(self, obj=None):
-        # Mongo Instance
-        __db = db.MongoDB(key._db_name, key._db_document)
-        tweets = __db._find(obj)
-        sa = senti.SentimentAnalysis()
-        # Translator Instance
-        trans_module = trans.Translate()
-        # result
-        _db = db.MongoDB(key._db_name, key._db_result)
-        _count = 0
-        # Data Loop
-        for data in tweets:
-            try:
-                polarity = sa._score(data['tweet'])
-                trans_text = trans_module._translate(
-                    data['tweet'], data['lang'])
-                trans_polarity = sa._score(trans_text)
-                set_data = {"$set": {"trans_text": trans_text, "polarity": polarity, "trans_polarity": trans_polarity}}
-                print(set_data)
-                __db._update({"_id": data['_id']}, set_data)
-                if trans_polarity > 0:
-                    self.__pos_polarity = trans_polarity
-                else:
-                    self.__neg_polarity = trans_polarity
-                _count += 1
-                print(_count)
-                _id = _count % 10
-                print(_id)
-                # Updates Positive & Negative Score to DB
-                _score = (self.__pos_polarity + abs(self.__neg_polarity)) / 2
-                _obj = {"_id": _id, "count": _count, "pos_polarity": self.__pos_polarity, "neg_polarity": self.__neg_polarity, "polarity": _score}
-                print(_obj)
-                _db._insert(_obj, True)
-            except:
-                continue
-
-# // Extra 
-# if((_count % key._tweet_set) == 0):
-#     self.__pos_polarity = self.__pos_polarity / key._tweet_set
-#     self.__neg_polarity = self.__neg_polarity / key._tweet_set
-#     _score = (self.__pos_polarity + abs(self.__neg_polarity)) / 2
-#     # _obj = {"$set": {"pos_polarity": self.__pos_polarity, "neg_polarity": self.__neg_polarity, "polarity": _score}}
-#     _obj = {"_id": _count // key._tweet_set, "count": _count, "pos_polarity": self.__pos_polarity, "neg_polarity": self.__neg_polarity, "polarity": _score}
-#     print(_obj)
-#     # _db._update({"_id": _count // key._tweet_set}, _obj)
-#     _db._insert(_obj, True)
-#     self.__pos_polarity = 0
-#     self.__neg_polarity = 0

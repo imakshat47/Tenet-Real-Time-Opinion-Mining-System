@@ -1,15 +1,12 @@
-import key
-import src.Tweets as t
-
+import Model
 # Driver Function
 if __name__ == '__main__':
     try:
-        tweets = t.Tweets()
-        # Data Collection & Cleaning
-        # tweets._fetch()                       # fetch Tweets from web // 
-        tweets._model({'polarity': {'$exists': False}})                 # to be removed in near future
-        tweets._model()
+        # intiating Model
+        model = Model.Model()
+        # calling for heroku
+        model._run_heroku()
     except Exception as e:
-        tweets._model({'polarity': {'$exists': False}})
-        print("App Error:  ", e)        
-    print("App Closes")
+        print("App Error:  ", e)
+
+    print("App Closes.")

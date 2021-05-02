@@ -3,7 +3,7 @@ import re
 import string
 
 # run only once after installing module
-demoji.download_codes()
+# demoji.download_codes()
 
 class PreProcess(object):
 

@@ -17,7 +17,13 @@ _db_document = "tweets"
 # Result
 _db_result = "result"
 
-# Tweet Set
-_tweet_set = 20000
-# Tweet max fetched
-_tweet_max_count = 24958
+# # Tweet Set
+# _tweet_set = 20000
+# # Tweet max fetched
+# _tweet_max_count = 24958
+
+# Number of tweets fetched on Heroku
+_tweet_limit = 0
+
+# Tenet Results Saves on ID
+_tenet_record = "record"
