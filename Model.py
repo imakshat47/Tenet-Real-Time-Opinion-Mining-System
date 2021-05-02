@@ -9,10 +9,10 @@ import src.Translate as trans
 
 class Model(object):
     # init method
-    def __init__(self, _obj=None):
+    def __init__(self):
         print("Model Loading...")
 
-    def _run_heroku(self):
+    def _run_heroku(self,  _obj=None):
         print("Heroku Running...")
         # db instance
         self.__db = db.MongoDB(key._db_name, key._db_document)
