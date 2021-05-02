@@ -34,6 +34,11 @@ class Model(object):
                 thread.start()
                 threads.append(thread)
                 print("Active Thread => ", threading.active_count())
+                if len(threads) == 10:
+                    for thread in threads:
+                        print("Active Thread Left => ", threading.active_count())
+                        thread.join()
+                    threads = []
             except Exception as e:
                 print("Error here => ", e)
                 continue
