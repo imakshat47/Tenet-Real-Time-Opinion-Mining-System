@@ -26,6 +26,7 @@ class Model(object):
         # print(tweets)
         # Data Loop
         threads = []
+        self.count = 0
         for data in tweets:
             try:
                 print("Tweet => ", data)
@@ -98,7 +99,8 @@ class Model(object):
                 _obj[3] += 1
             else:
                 _obj[4] += 1
+        self.count += 1
         self._db._update({"_id": key._tenet_record}, {
-                         "$set": {"ordinals": _obj}})
+                         "$set": {"ordinals": _obj, "count_dataset": self.count}})
         print("-- Thread End --")
         return None
