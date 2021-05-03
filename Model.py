@@ -42,8 +42,7 @@ class Model(object):
                         thread.join()
                     threads = []
             except:
-                print("Error here => ", e)
-                print("Going to sleep...")
+                print("Error here => ", e)                
                 sleep(120)
                 continue
         for thread in threads:
@@ -102,5 +101,5 @@ class Model(object):
         self.count += 1
         self._db._update({"_id": key._tenet_record}, {
                          "$set": {"ordinals": _obj, "count_dataset": self.count}})
-        print("-- Thread End --")
+        print("-- Thread End --    @ ", self.count)
         return None
