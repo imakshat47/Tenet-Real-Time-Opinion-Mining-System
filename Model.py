@@ -55,23 +55,37 @@ class Model(object):
 
     # middleware for heroku
     def __middleware(self, text, lang_tag, id):
+        _err = False
+        self.count += 1
+
         print("-- Thread Set --")
         sleep(key._sleep_time)
         print("Thread Active Now!!")
-        # result
+
+        if len(text) <= 25:
+            _err = True
+
+        if _err == False:
+            try:
+                trans_text = self.trans_module._translate(text, lang_tag)
+            except:
+                _err = True
+
+        if _err == True:
+            print("Error for Id: ", id)
+            self.__db._delete({"_id": id})
+            print("-- Thread End with Error --    @ ", self.count)
+            return None
+
         polarity = self.sa._score(text)
-        # print("Going to sleep...")
-        # sleep(key._sleep_time)
-        # print("Back from sleep...")
-        trans_text = self.trans_module._translate(text, lang_tag)
-        # print("Going to sleep...")
-        # sleep(key._sleep_time)
-        # print("Back from sleep...")
         trans_polarity = self.sa._score(trans_text)
         set_data = {"$set": {"trans_text": trans_text,
                              "polarity": polarity, "trans_polarity": trans_polarity}}
         print(set_data)
         self.__db._update({"_id": id}, set_data)
+
+        print("-- Thread End --    @ ", self.count)
+        return None
 
         # print("Going to sleep...")
         # sleep(key._sleep_time)
@@ -97,5 +111,3 @@ class Model(object):
         # self.count += 1
         # self._db._update({"_id": key._tenet_record}, {
         #                  "$set": {"ordinals": _obj, "count_dataset": self.count}})
-        print("-- Thread End --    @ ", self.count)
-        return None

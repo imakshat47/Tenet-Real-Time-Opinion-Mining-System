@@ -14,5 +14,5 @@ class Translate(object):
 
     def _translate(self, text, lang="en"):
         # Text translated
-        text = self.__translator.translate(text, lang_tgt=lang)
+        # text = self.__translator.translate(text, lang_tgt=lang)
         return self.__translator.translate(text, lang_tgt="en")

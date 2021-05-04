@@ -24,6 +24,9 @@ class MongoDB(object):
             _sort = -1
         return self.__col.find(obj).skip(_offset).limit(_limit).sort("_id", _sort)
 
+    def _delete(self, _obj):
+        self.__col.delete_one(_obj)
+
     def __del__(self):
         self.__client.close()
         print("DB Closed!!")
