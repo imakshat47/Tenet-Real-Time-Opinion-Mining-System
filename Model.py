@@ -29,7 +29,7 @@ class Model(object):
         self.count = 0
         for data in tweets:
             try:
-                print("Tweet => ", data)
+                # print("Tweet => ", data)
                 thread = threading.Thread(None, target=self.__middleware, args=(
                     data['tweet'], data['lang'], data['_id'],))
                 thread.start()
@@ -37,13 +37,11 @@ class Model(object):
                 print("Active Thread => ", threading.active_count())
                 if len(threads) == 10:
                     for thread in threads:
-                        print("Active Thread Left => ",
-                              threading.active_count())
                         thread.join()
                     threads = []
             except:
-                print("Error here => ", e)                
-                sleep(120)
+                print("Error here => ", e)
+                sleep(30)
                 continue
         for thread in threads:
             print("Active Thread Left => ", threading.active_count())
@@ -60,32 +58,32 @@ class Model(object):
     # middleware for heroku
     def __middleware(self, text, lang_tag, id):
         print("-- Thread Set --")
-        print("Going to sleep...")
         sleep(key._sleep_time)
-        print("Back from sleep...")
         print("Thread Active Now!!")
         # result
         polarity = self.sa._score(text)
-        print("Going to sleep...")
-        sleep(key._sleep_time)
-        print("Back from sleep...")
+        # print("Going to sleep...")
+        # sleep(key._sleep_time)
+        # print("Back from sleep...")
         trans_text = self.trans_module._translate(text, lang_tag)
-        print("Going to sleep...")
-        sleep(key._sleep_time)
-        print("Back from sleep...")
+        # print("Going to sleep...")
+        # sleep(key._sleep_time)
+        # print("Back from sleep...")
         trans_polarity = self.sa._score(trans_text)
         set_data = {"$set": {"trans_text": trans_text,
                              "polarity": polarity, "trans_polarity": trans_polarity}}
         print(set_data)
         self.__db._update({"_id": id}, set_data)
-        print("Going to sleep...")
+
+        # print("Going to sleep...")
         sleep(key._sleep_time)
-        print("Back from sleep...")
+        print("Thread Active...")
+
         # Update Result
         _obj = self._db._find({"_id": key._tenet_record})
         if _obj != None:
             _obj = _obj[0]['ordinals']
-        print(_obj)
+        # print(_obj)
         if trans_polarity == 0:
             _obj[0] += 1
         elif trans_polarity > 0:
