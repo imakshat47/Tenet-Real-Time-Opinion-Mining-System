@@ -16,7 +16,7 @@ class Model(object):
         print("Heroku Running...")
         # db instance
         self.__db = db.MongoDB(key._db_name, key._db_document)
-        self._db = db.MongoDB(key._db_name, key._db_result)
+        # self._db = db.MongoDB(key._db_name, key._db_result)
         # Sentiment Score Instance
         self.sa = senti.SentimentAnalysis()
         # Translator Instance
@@ -44,14 +44,14 @@ class Model(object):
             print("Active Thread Left => ", threading.active_count())
             thread.join()
         self.__db.__del__()
-        self._db.__del__()
+        # self._db.__del__()
 
         print("Active Thread => ", threading.active_count())
         print("Threads Running: ", threading.enumerate())
         print(threading.current_thread())
 
         print("Heroku Ends!!")
-        _run_heroku(self, _obj)
+        self._run_heroku(_obj)
 
     # middleware for heroku
     def __middleware(self, text, lang_tag, id):
