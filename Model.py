@@ -10,6 +10,7 @@ import src.Translate as trans
 class Model(object):
     # init method
     def __init__(self):
+        self.count = 0
         print("Model Loading...")
 
     def _run_heroku(self,  _obj=None):
@@ -22,8 +23,7 @@ class Model(object):
         # Translator Instance
         self.trans_module = trans.Translate()
         # Data Loop
-        threads = []
-        self.count = 0
+        threads = []        
         for data in self.__db._sorted_find(_obj, key._tweet_limit):
             try:
                 thread = threading.Thread(None, target=self.__middleware, args=(
