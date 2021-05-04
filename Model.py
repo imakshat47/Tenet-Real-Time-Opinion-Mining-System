@@ -26,12 +26,10 @@ class Model(object):
         self.count = 0
         for data in self.__db._sorted_find(_obj, key._tweet_limit):
             try:
-                # print("Tweet => ", data)
                 thread = threading.Thread(None, target=self.__middleware, args=(
                     data['tweet'], data['lang'], data['_id'],))
                 thread.start()
                 threads.append(thread)
-                print("Active Thread => ", threading.active_count())
                 if len(threads) == 10:
                     for thread in threads:
                         thread.join()
@@ -40,6 +38,8 @@ class Model(object):
                 print("Error here => ", e)
                 sleep(30)
                 continue
+        print("Threads Running: ", threading.enumerate())
+
         for thread in threads:
             print("Active Thread Left => ", threading.active_count())
             thread.join()
@@ -47,10 +47,10 @@ class Model(object):
         # self._db.__del__()
 
         print("Active Thread => ", threading.active_count())
-        print("Threads Running: ", threading.enumerate())
-        print(threading.current_thread())
 
         print("Heroku Ends!!")
+        sleep(key._sleep_time)
+        print(threading.current_thread())
         self._run_heroku(_obj)
 
     # middleware for heroku
@@ -58,16 +58,14 @@ class Model(object):
         _err = False
         self.count += 1
 
-        print("-- Thread Set --")
-        sleep(key._sleep_time)
-        print("Thread Active Now!!")
-
         if len(text) <= 25:
             _err = True
 
         if _err == False:
             try:
+                sleep(key._sleep_time)
                 trans_text = self.trans_module._translate(text, lang_tag)
+                print("Translated Text: ", trans_text)
             except:
                 _err = True
 
@@ -81,7 +79,7 @@ class Model(object):
         trans_polarity = self.sa._score(trans_text)
         set_data = {"$set": {"trans_text": trans_text,
                              "polarity": polarity, "trans_polarity": trans_polarity}}
-        print(set_data)
+        print("Updating with: ", set_data)
         self.__db._update({"_id": id}, set_data)
 
         print("-- Thread End --    @ ", self.count)
