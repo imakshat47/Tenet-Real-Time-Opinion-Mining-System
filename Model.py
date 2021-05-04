@@ -21,13 +21,10 @@ class Model(object):
         self.sa = senti.SentimentAnalysis()
         # Translator Instance
         self.trans_module = trans.Translate()
-        # fetch tweets
-        tweets = self.__db._sorted_find(_obj, key._tweet_limit)
-        # print(tweets)
         # Data Loop
         threads = []
         self.count = 0
-        for data in tweets:
+        for data in self.__db._sorted_find(_obj, key._tweet_limit):
             try:
                 # print("Tweet => ", data)
                 thread = threading.Thread(None, target=self.__middleware, args=(
@@ -54,6 +51,7 @@ class Model(object):
         print(threading.current_thread())
 
         print("Heroku Ends!!")
+        _run_heroku(self, _obj)
 
     # middleware for heroku
     def __middleware(self, text, lang_tag, id):
@@ -76,28 +74,28 @@ class Model(object):
         self.__db._update({"_id": id}, set_data)
 
         # print("Going to sleep...")
-        sleep(key._sleep_time)
-        print("Thread Active...")
+        # sleep(key._sleep_time)
+        # print("Thread Active...")
 
         # Update Result
-        _obj = self._db._find({"_id": key._tenet_record})
-        if _obj != None:
-            _obj = _obj[0]['ordinals']
-        # print(_obj)
-        if trans_polarity == 0:
-            _obj[0] += 1
-        elif trans_polarity > 0:
-            if trans_polarity >= .5:
-                _obj[1] += 1
-            else:
-                _obj[2] += 1
-        else:
-            if trans_polarity < -0.5:
-                _obj[3] += 1
-            else:
-                _obj[4] += 1
-        self.count += 1
-        self._db._update({"_id": key._tenet_record}, {
-                         "$set": {"ordinals": _obj, "count_dataset": self.count}})
+        # _obj = self._db._find({"_id": key._tenet_record})
+        # if _obj != None:
+        #     _obj = _obj[0]['ordinals']
+        # # print(_obj)
+        # if trans_polarity == 0:
+        #     _obj[0] += 1
+        # elif trans_polarity > 0:
+        #     if trans_polarity >= .5:
+        #         _obj[1] += 1
+        #     else:
+        #         _obj[2] += 1
+        # else:
+        #     if trans_polarity < -0.5:
+        #         _obj[3] += 1
+        #     else:
+        #         _obj[4] += 1
+        # self.count += 1
+        # self._db._update({"_id": key._tenet_record}, {
+        #                  "$set": {"ordinals": _obj, "count_dataset": self.count}})
         print("-- Thread End --    @ ", self.count)
         return None

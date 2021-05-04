@@ -16,13 +16,13 @@ class MongoDB(object):
     def _update(self, where_condition, set_data):
         self.__col.update_one(where_condition, set_data)
 
-    def _find(self, obj=None, _limit=0):
-        return self.__col.find(obj).limit(_limit)
+    def _find(self, obj=None, _limit=0, _offset=0):
+        return self.__col.find(obj).skip(_offset).limit(_limit)
 
-    def _sorted_find(self, obj=None, _limit=0, _sort=None):
+    def _sorted_find(self, obj=None, _limit=0, _sort=None, _offset=0):
         if _sort == None:
             _sort = -1
-        return self.__col.find(obj).limit(_limit).sort("_id", _sort)
+        return self.__col.find(obj).skip(_offset).limit(_limit).sort("_id", _sort)
 
     def __del__(self):
         self.__client.close()
