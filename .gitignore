@@ -3,3 +3,6 @@ _key.py
 
 # Cache
 __pycache__
+
+# Virtual env
+tenet

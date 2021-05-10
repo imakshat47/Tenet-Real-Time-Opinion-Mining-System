@@ -3,8 +3,9 @@ import json
 from tweepy import Stream
 from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
-import src.Mongodb as db
-import src.PreProcess as preProcess
+from src.Database import MongoDB
+from src.PreProcess import PreProcess
+from src.Translate import MTS
 import var
 
 # Listen to stream and return it
@@ -13,8 +14,9 @@ class StdOutListener(StreamListener):
         super().__init__()
         self.__count = var._tweet_count
         self.__max_tweets = var._tweet_max_count
-        self.__pre = preProcess.PreProcess()
-        self.__db = db.MongoDB(key._db_name, key._db_document)
+        self.__pre = PreProcess()
+        self.__mts = MTS()
+        self.__db = MongoDB(key._db_name, key._db_document)
 
     def on_timeout(self):
         print("TimeOut !!")
@@ -37,9 +39,10 @@ class StdOutListener(StreamListener):
             # Data Cleaning
             __tweet = self.__pre._clean(__tweet)
             __tweet = self.__pre._emojis(__tweet, True)
+            _text = self.__mts._translator(__tweet)
             # Object of data
             self.__count += 1
-            _obj = {"__text": __tweet, "lang": __lang, "_count": self.__count}
+            _obj = {"__text": __tweet, "lang": __lang, "_count": self.__count, "translated_text": _text}
             print(_obj)
             self.__db._insert(_obj)
         except Exception as e:
