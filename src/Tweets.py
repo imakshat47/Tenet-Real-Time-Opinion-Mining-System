@@ -5,14 +5,14 @@ from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
 import src.Mongodb as db
 import src.PreProcess as preProcess
-
+import var
 
 # Listen to stream and return it
 class StdOutListener(StreamListener):
     def __init__(self):
         super().__init__()
-        self.__count = 0
-        self.__max_tweets = key._tweet_max_count
+        self.__count = var._tweet_count
+        self.__max_tweets = var._tweet_max_count
         self.__pre = preProcess.PreProcess()
         self.__db = db.MongoDB(key._db_name, key._db_document)
 
@@ -30,18 +30,20 @@ class StdOutListener(StreamListener):
         # Scratching data
         try:
             data = json.loads(raw_data)
-            __lang = data['lang']
             __tweet = data['extended_tweet']['full_text']
-        except:
-            return True
-        # Data Cleaning
-        __tweet = self.__pre._clean(__tweet)
-        __tweet = self.__pre._emojis(__tweet, True)
-        # Object of data
-        _obj = {"tweet": __tweet, "lang": __lang}
-        print(_obj)
-        self.__db._insert(_obj)
-        self.__count += 1
+            if len(__tweet) <= var._min_text_len:
+                raise("Smaller Text!!")
+            __lang = data['lang']
+            # Data Cleaning
+            __tweet = self.__pre._clean(__tweet)
+            __tweet = self.__pre._emojis(__tweet, True)
+            # Object of data
+            self.__count += 1
+            _obj = {"__text": __tweet, "lang": __lang, "_count": self.__count}
+            print(_obj)
+            self.__db._insert(_obj)
+        except Exception as e:
+            print({e})            
         return True
 
     def on_error(self, status):
@@ -60,10 +62,7 @@ class Tweets(object):
         self.__access_token_secret = key._auth_secret
         self.__auth = OAuthHandler(self.__consumer_key, self.__consumer_secret)
         self.__auth.set_access_token(
-            self.__access_token, self.__access_token_secret)
-        # Final Polarity
-        self.__pos_polarity = 0
-        self.__neg_polarity = 0
+            self.__access_token, self.__access_token_secret)        
 
     def _fetch(self, _track=["Modi", "Covid", "IPL", "Stock Market"]):
         __stream = Stream(self.__auth, StdOutListener())

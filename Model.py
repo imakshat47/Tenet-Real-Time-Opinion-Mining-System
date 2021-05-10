@@ -83,29 +83,4 @@ class Model(object):
         self.__db._update({"_id": id}, set_data)
 
         print("-- Thread End --    @ ", self.count)
-        return None
-
-        # print("Going to sleep...")
-        # sleep(key._sleep_time)
-        # print("Thread Active...")
-
-        # Update Result
-        # _obj = self._db._find({"_id": key._tenet_record})
-        # if _obj != None:
-        #     _obj = _obj[0]['ordinals']
-        # # print(_obj)
-        # if trans_polarity == 0:
-        #     _obj[0] += 1
-        # elif trans_polarity > 0:
-        #     if trans_polarity >= .5:
-        #         _obj[1] += 1
-        #     else:
-        #         _obj[2] += 1
-        # else:
-        #     if trans_polarity < -0.5:
-        #         _obj[3] += 1
-        #     else:
-        #         _obj[4] += 1
-        # self.count += 1
-        # self._db._update({"_id": key._tenet_record}, {
-        #                  "$set": {"ordinals": _obj, "count_dataset": self.count}})
+        return None        

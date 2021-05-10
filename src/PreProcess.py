@@ -55,6 +55,8 @@ class PreProcess(object):
             preprocess_text = re.sub(r'url', '', preprocess_text)
             preprocess_text = re.sub(r'USER_MENTION', '', preprocess_text)
 
+            self._emojis(preprocess_text, True)
+
             return preprocess_text
 
         except Exception as e:

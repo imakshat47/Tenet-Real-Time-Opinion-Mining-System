@@ -12,18 +12,10 @@ _mongo_uri = environ['MONGO_URI']
 
 # DB Details
 _db_name = "tenet"
-_db_document = "tweets"
+_db_document = "dataset"
 
 # Result
 _db_result = "result"
-
-# # Tweet Set
-# _tweet_set = 20000
-# # Tweet max fetched
-# _tweet_max_count = 24958
-
-# Number of tweets fetched on Heroku
-_tweet_limit = 50
 
 # Tenet Results Saves on ID
 _tenet_record = "record"
