@@ -32,15 +32,17 @@ class StdOutListener(StreamListener):
         # Scratching data
         try:
             data = json.loads(raw_data)
-            __tweet = data['extended_tweet']['full_text']
-            print("Text: ",__tweet)
+            print(data)
+            __tweet = data['extended_tweet']['full_text']            
             if len(__tweet) <= var._min_text_len:
                 raise  Exception("Smaller Text!!")
             __lang = data['lang']
+            print("Text: ",__tweet)
             # Data Cleaning
             __tweet = self.__pre._clean(__tweet)
             __tweet = self.__pre._emojis(__tweet, True)
             # _text = self.__mts._translator(__tweet)
+            print("Cleaned Text: ",__tweet)
             # Object of data
             self.__count += 1
             _obj = {"__text": __tweet, "lang": __lang, "_count": self.__count}

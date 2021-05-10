@@ -10,14 +10,12 @@ _auth_secret = environ['A_SEC']
 _mongo_uri = environ['MONGO_URI']
 
 
+
 # DB Details
 _db_name = "tenet"
 _db_document = "dataset"
-
 # Result
 _db_result = "result"
 
-# Tenet Results Saves on ID
+# Tenet Results
 _tenet_record = "record"
-
-_sleep_time = 21
