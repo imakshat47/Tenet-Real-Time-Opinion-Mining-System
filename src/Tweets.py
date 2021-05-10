@@ -43,6 +43,7 @@ class StdOutListener(StreamListener):
             __lang = data['lang']                        
         except Exception as e:
             print({e})
+            return True
         thread = threading.Thread(None, target=self.__cleaning, args=(__text, __lang, self.__count, ), daemon=True)
         thread.start()
         self._threads.append(thread)   
