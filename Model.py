@@ -3,7 +3,7 @@ import threading
 from time import sleep
 from src.Database import MongoDB
 from src.SentimentAnalysis import SentimentAnalysis
-from src.translate import MTS
+from src.Translate import MTS
 # Model class
 
 

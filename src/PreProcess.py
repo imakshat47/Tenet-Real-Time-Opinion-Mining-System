@@ -22,7 +22,7 @@ class PreProcess(object):
             preprocess_text = re.sub(r'(.)\1+', r'\1\1', preprocess_text)
 
             # Remove - & '
-            preprocess_text = re.sub(r'(-|\')', '', preprocess_text)
+            preprocess_text = re.sub(r'(-|\')', ' ', preprocess_text)
 
             # Replaces #hashtag with hashtag
             preprocess_text = re.sub(r'#(\S+)', r' \1 ', preprocess_text)
@@ -31,7 +31,7 @@ class PreProcess(object):
             preprocess_text = re.sub(r'\.{1,}', ' ', preprocess_text)
 
             # Strip space, " and ' from text
-            preprocess_text = preprocess_text.strip(' "\'')
+            preprocess_text = preprocess_text.strip('  "\'')
 
             # Replace @handle with the word USER_MENTION
             preprocess_text = re.sub(
@@ -41,7 +41,7 @@ class PreProcess(object):
 
             # Replaces URLs with the word URL
             preprocess_text = re.sub(
-                r'\w+:\/{2}[\d\w-]+(\.[\d\w-]+)*(?:(?:\/[^\s/]*))*', '', preprocess_text)
+                r'\w+:\/{2}[\d\w-]+(\.[\d\w-]+)*(?:(?:\/[^\s/]*))*', ' ', preprocess_text)
             preprocess_text = re.sub(r'http\S+', '', preprocess_text)
             preprocess_text = re.sub(
                 r'((www\.[\S]+)|(https://[\S]+))', 'url', preprocess_text)
@@ -50,11 +50,11 @@ class PreProcess(object):
             preprocess_text = re.sub(r'\s+', ' ', preprocess_text)
 
             # removing http/url
-            preprocess_text = re.sub(r'http', '', preprocess_text)
-            preprocess_text = re.sub(r'https', '', preprocess_text)
-            preprocess_text = re.sub(r'url', '', preprocess_text)
-            preprocess_text = re.sub(r'USER_MENTION', '', preprocess_text)
-
+            preprocess_text = re.sub(r'http', ' ', preprocess_text)
+            preprocess_text = re.sub(r'https', ' ', preprocess_text)
+            preprocess_text = re.sub(r'url', ' ', preprocess_text)
+            preprocess_text = re.sub(r'USER_MENTION', ' ', preprocess_text)
+            preprocess_text = preprocess_text.strip('    ')
             self._emojis(preprocess_text, True)
 
             return preprocess_text
@@ -869,5 +869,6 @@ class PreProcess(object):
 
             return processed_text
 
-        except:
+        except Exception as e:
+            print('PreProcessor Error => ', e)
             return " "

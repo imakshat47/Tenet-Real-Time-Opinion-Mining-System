@@ -33,8 +33,9 @@ class StdOutListener(StreamListener):
         try:
             data = json.loads(raw_data)
             __tweet = data['extended_tweet']['full_text']
+            print("Text: ",__tweet)
             if len(__tweet) <= var._min_text_len:
-                raise("Smaller Text!!")
+                raise  Exception("Smaller Text!!")
             __lang = data['lang']
             # Data Cleaning
             __tweet = self.__pre._clean(__tweet)
@@ -46,7 +47,7 @@ class StdOutListener(StreamListener):
             print(_obj)
             self.__db._insert(_obj)
         except Exception as e:
-            print({e})            
+            print("Error: ",format(e))
         return True
 
     def on_error(self, status):
