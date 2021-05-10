@@ -40,10 +40,10 @@ class StdOutListener(StreamListener):
             # Data Cleaning
             __tweet = self.__pre._clean(__tweet)
             __tweet = self.__pre._emojis(__tweet, True)
-            _text = self.__mts._translator(__tweet)
+            # _text = self.__mts._translator(__tweet)
             # Object of data
             self.__count += 1
-            _obj = {"__text": __tweet, "lang": __lang, "_count": self.__count, "translated_text": _text}
+            _obj = {"__text": __tweet, "lang": __lang, "_count": self.__count}
             print(_obj)
             self.__db._insert(_obj)
         except Exception as e:
