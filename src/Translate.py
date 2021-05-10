@@ -13,11 +13,12 @@ class MTS(object):
         self.__translator = Translator()
         self.__google_translator = google_translator()   
         self.sleep_time = 0.5     
+        print("Translator Initiated")
 
     def _translator(self, _text = None, _lang="en"):
         if _text == None:
             return None
-        
+        print("Translating...")
         txtBlob = TextBlob(_text)
         _text = str(txtBlob.correct())        
         sleep(self.sleep_time) #short Time
@@ -47,4 +48,5 @@ class MTS(object):
                         except:
                             _text = None
         _text = str(txtBlob.correct())
+        print("Translating Completed.")
         return _text

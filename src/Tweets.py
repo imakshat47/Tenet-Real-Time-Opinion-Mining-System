@@ -72,7 +72,7 @@ class StdOutListener(StreamListener):
             print("Active Threads: ", threading.active_count())
             thread.join()
         print("Closing: ",notice)
-        return
+        return None
 
     def on_error(self, status):
         print(status)
@@ -89,8 +89,7 @@ class Tweets(object):
         self.__access_token = key._auth_token
         self.__access_token_secret = key._auth_secret
         self.__auth = OAuthHandler(self.__consumer_key, self.__consumer_secret)
-        self.__auth.set_access_token(
-            self.__access_token, self.__access_token_secret)        
+        self.__auth.set_access_token(self.__access_token, self.__access_token_secret)        
 
     def _fetch(self, _track=["Modi", "Covid", "IPL", "Stock Market"]):
         print("Tweets Fetching...")

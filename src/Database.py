@@ -7,6 +7,7 @@ class MongoDB(object):
         self.__client = pymongo.MongoClient(key._mongo_uri)
         __db = self.__client[client]
         self.__col = __db[db]
+        print("Connecting Database...")
 
     def _insert(self, obj, checkIfexists=False):
         if checkIfexists == True:
