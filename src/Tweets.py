@@ -1,12 +1,11 @@
-import key
-import json
 from tweepy import Stream
 from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
 from src.Database import MongoDB
 from src.PreProcess import PreProcess
-from src.Translate import MTS
+import key
 import var
+import json
 
 # Listen to stream and return it
 class StdOutListener(StreamListener):
@@ -15,7 +14,6 @@ class StdOutListener(StreamListener):
         self.__count = var._tweet_count
         self.__max_tweets = var._tweet_max_count
         self.__pre = PreProcess()
-        self.__mts = MTS()
         self.__db = MongoDB(key._db_name, key._db_document)
 
     def on_timeout(self):
@@ -31,25 +29,22 @@ class StdOutListener(StreamListener):
         raw_data = _data
         # Scratching data
         try:
-            data = json.loads(raw_data)
-            print(data)
+            data = json.loads(raw_data)            
             __tweet = data['extended_tweet']['full_text']            
             if len(__tweet) <= var._min_text_len:
                 raise  Exception("Smaller Text!!")
-            __lang = data['lang']
-            print("Text: ",__tweet)
+            print("Count: ", self.__count)
+            __lang = data['lang']            
             # Data Cleaning
             __tweet = self.__pre._clean(__tweet)
-            __tweet = self.__pre._emojis(__tweet, True)
-            # _text = self.__mts._translator(__tweet)
-            print("Cleaned Text: ",__tweet)
+            __tweet = self.__pre._emojis(__tweet, True)                        
             # Object of data
             self.__count += 1
             _obj = {"__text": __tweet, "lang": __lang, "_count": self.__count}
             print(_obj)
             self.__db._insert(_obj)
         except Exception as e:
-            print("Error: ",format(e))
+            print({e})
         return True
 
     def on_error(self, status):
