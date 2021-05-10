@@ -3,7 +3,7 @@ import threading
 from time import sleep
 from src.Database import MongoDB
 from src.SentimentAnalysis import SentimentAnalysis
-from src.translate import Translate 
+from src.translate import MTS
 # Model class
 
 
@@ -21,7 +21,7 @@ class Model(object):
         # Sentiment Score Instance
         self.sa = SentimentAnalysis()
         # Translator Instance
-        self.trans_module = Translate()
+        self.trans_module = MTS()
         # Data Loop
         threads = []        
         for data in self.__db._sorted_find(_obj, key._tweet_limit):
