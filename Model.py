@@ -1,9 +1,9 @@
 import key
 import threading
 from time import sleep
-import src.Mongodb as db
-import src.SentimentAnalysis as senti
-import src.Translate as trans
+from src.Database import MongoDB
+from src.SentimentAnalysis import SentimentAnalysis
+from src.translate import Translate 
 # Model class
 
 
@@ -16,12 +16,12 @@ class Model(object):
     def _run_heroku(self,  _obj=None):
         print("Heroku Running...")
         # db instance
-        self.__db = db.MongoDB(key._db_name, key._db_document)
+        self.__db = MongoDB(key._db_name, key._db_document)
         # self._db = db.MongoDB(key._db_name, key._db_result)
         # Sentiment Score Instance
-        self.sa = senti.SentimentAnalysis()
+        self.sa = SentimentAnalysis()
         # Translator Instance
-        self.trans_module = trans.Translate()
+        self.trans_module = Translate()
         # Data Loop
         threads = []        
         for data in self.__db._sorted_find(_obj, key._tweet_limit):
