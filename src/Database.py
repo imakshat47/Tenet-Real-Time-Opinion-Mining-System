@@ -17,6 +17,9 @@ class MongoDB(object):
     def _update(self, where_condition, set_data):
         self.__col.update_one(where_condition, set_data)
 
+    def _count(self, obj = None):
+        return self.__col.find(obj).count()
+
     def _find(self, obj=None, _limit=0, _offset=0):
         return self.__col.find(obj).skip(_offset).limit(_limit)
 

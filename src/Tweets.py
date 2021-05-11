@@ -17,7 +17,7 @@ class StdOutListener(StreamListener):
         self.__max_tweets = var._tweet_max_count
         self.__pre = PreProcess()
         self.__db = MongoDB(key._db_name, key._db_document)         
-        self._sleep_time = 0.2       
+        self._sleep_time = 0.2  
 
     def on_error(self, status_code):
         print("Error: ", status_code)
@@ -46,31 +46,28 @@ class StdOutListener(StreamListener):
             __text = data['extended_tweet']['full_text']            
             if len(__text) <= var._min_text_len:
                 raise  Exception("Smaller Text!!")
-            __lang = data['lang']                                    
-            self.__cleaning(__text, __lang, self.__count)
+            __lang = data['lang']  
+            print("Text: ", __text)
+            print("Text Cleaning...")
+            # Data Cleaning            
+            sleep(self._sleep_time)
+            print("Back from sleep...")
+            _text = self.__pre._clean(__text)            
+            sleep(self._sleep_time)
+            print("Back from sleep...")
+            _text = self.__pre._emojis(_text, True)            
+            sleep(self._sleep_time)        
+            print("Back from sleep...")
+            # Object of data
+            self.__count += 1
+            _obj = {"__text": _text, "lang": __lang, "_count": self.__count}
+            print(_obj)            
+            sleep(self._sleep_time)
+            print("Back from sleep...")
+            self.__db._insert(_obj)
         except Exception as e:
             print({e})            
-        return True
-    
-    def __cleaning(self, _text, _lang, _count):
-        print("Text Cleaning...")
-        # Data Cleaning
-        print("Going to sleep...")
-        sleep(self._sleep_time)
-        _text = self.__pre._clean(_text)
-        print("Going to sleep...")
-        sleep(self._sleep_time)
-        _text = self.__pre._emojis(_text, True)
-        print("Going to sleep...")
-        sleep(self._sleep_time)        
-        # Object of data
-        self.__count += 1
-        _obj = {"__text": _text, "lang": _lang, "_count": _count}
-        print(_obj)
-        print("Going to sleep...")
-        sleep(self._sleep_time)
-        self.__db._insert(_obj)
-        return None
+        return True    
 
     def on_disconnect(self, notice):        
         print("Closing: ",notice)
@@ -88,9 +85,39 @@ class Tweets(object):
         self.__auth = OAuthHandler(self.__consumer_key, self.__consumer_secret)
         self.__auth.set_access_token(self.__access_token, self.__access_token_secret)        
 
+    def __fetch(self, _track):
+        try:
+            print("Tweets Fetching...")
+            __stream = Stream(self.__auth, StdOutListener())
+            __stream.filter(track=_track)
+            print(threading.current_thread())
+        except:
+            print("Fetching Error!!")            
+
     def _fetch(self, _track=["Modi", "Covid", "IPL", "Stock Market"]):
-        print("Tweets Fetching...")
-        __stream = Stream(self.__auth, StdOutListener())
-        __stream.filter(track=_track)
-        print(threading.current_thread())
+        threads = []
+        db = MongoDB(key._db_name, key._db_document)  
+        
+        while db._count() <= var._tweet_max_count:
+            thread = threading.Thread(None, target=self.__fetch, args=(_track,), daemon=True)
+            thread.start()
+            threads.append(thread)         
+            
+            if len(threads) == var._max_allowed_threads:
+                for thread in threads:
+                    print("Active Threads: ", threading.active_count())
+                    thread.join()
+                threads = []
+        
+        # Cleaning Threads
+        print("Cleaning Threads: ")        
+        for thread in threads:
+            print("Active Threads: ", threading.active_count())
+            thread.join()
+            
+        if len(threads) == 0:            
+            print("Threads Cleaned.")
+            
+        print("Active Threads: ", threading.active_count())
+        
         print("Tweets Collected!!")
