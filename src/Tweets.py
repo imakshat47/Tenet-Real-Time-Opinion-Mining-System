@@ -3,7 +3,6 @@ from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
 from src.Database import MongoDB
 from src.PreProcess import PreProcess
-from src.Translate import MTS
 from time import sleep
 import threading
 import key
@@ -17,18 +16,16 @@ class StdOutListener(StreamListener):
         self.__count = var._tweet_count
         self.__max_tweets = var._tweet_max_count
         self.__pre = PreProcess()
-        self.__db = MongoDB(key._db_name, key._db_document)
-        self.__mts = MTS()
-        self._threads = []
-        self._sleep_time = 0.2
+        self.__db = MongoDB(key._db_name, key._db_document)         
+        self._sleep_time = 0.2       
 
     def on_error(self, status_code):
         print("Error: ", status_code)
         return None
-    
-    
+
     def on_timeout(self):
         print("TimeOut !!")
+        return None
 
     def on_connect(self):
         print("Connection Success!!")
@@ -58,35 +55,29 @@ class StdOutListener(StreamListener):
     def __cleaning(self, _text, _lang, _count):
         print("Text Cleaning...")
         # Data Cleaning
+        print("Going to sleep...")
         sleep(self._sleep_time)
         _text = self.__pre._clean(_text)
+        print("Going to sleep...")
         sleep(self._sleep_time)
         _text = self.__pre._emojis(_text, True)
-        sleep(self._sleep_time)
-        trans_text = self.__mts._translator(_text,_lang)
-        sleep(self._sleep_time)
+        print("Going to sleep...")
+        sleep(self._sleep_time)        
         # Object of data
         self.__count += 1
-        _obj = {"__text": _text, "lang": _lang, "_count": _count, "translated_text": trans_text}
+        _obj = {"__text": _text, "lang": _lang, "_count": _count}
         print(_obj)
+        print("Going to sleep...")
         sleep(self._sleep_time)
         self.__db._insert(_obj)
         return None
 
-    def on_disconnect(self, notice):
-        # for thread in self._threads:
-        #     print("Active Threads: ", threading.active_count())
-        #     thread.join()
+    def on_disconnect(self, notice):        
         print("Closing: ",notice)
         return None
 
-    def on_error(self, status):
-        print(status)
-        return True
 
 # Fetch Tweets from Tweepy
-
-
 class Tweets(object):
     def __init__(self):
         # Variables that contain the user credentials to access Twitter API
