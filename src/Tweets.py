@@ -22,8 +22,17 @@ class StdOutListener(StreamListener):
         self._threads = []
         self._sleep_time = 0.2
 
+    def on_error(self, status_code):
+        print("Error: ", status_code)
+        return None
+    
+    
     def on_timeout(self):
         print("TimeOut !!")
+
+    def on_connect(self):
+        print("Connection Success!!")
+        pass
 
     def on_data(self, _data):
         # Check Condition
@@ -40,13 +49,10 @@ class StdOutListener(StreamListener):
             __text = data['extended_tweet']['full_text']            
             if len(__text) <= var._min_text_len:
                 raise  Exception("Smaller Text!!")
-            __lang = data['lang']                        
+            __lang = data['lang']                                    
+            self.__cleaning(__text, __lang, self.__count)
         except Exception as e:
-            print({e})
-            return True
-        thread = threading.Thread(None, target=self.__cleaning, args=(__text, __lang, self.__count, ), daemon=True)
-        thread.start()
-        self._threads.append(thread)   
+            print({e})            
         return True
     
     def __cleaning(self, _text, _lang, _count):
@@ -68,9 +74,9 @@ class StdOutListener(StreamListener):
         return None
 
     def on_disconnect(self, notice):
-        for thread in self._threads:
-            print("Active Threads: ", threading.active_count())
-            thread.join()
+        # for thread in self._threads:
+        #     print("Active Threads: ", threading.active_count())
+        #     thread.join()
         print("Closing: ",notice)
         return None
 
