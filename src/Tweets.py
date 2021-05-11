@@ -18,17 +18,19 @@ class StdOutListener(StreamListener):
         self.__pre = PreProcess()
         self.__db = MongoDB(key._db_name, key._db_document)         
         self._sleep_time = 0.2  
+        print("Tweepy Stream Connection...")
+        sleep(self._sleep_time)
 
     def on_error(self, status_code):
-        print("Error: ", status_code)
+        print("Tweepy Stream Error: ", status_code)
         return None
 
     def on_timeout(self):
-        print("TimeOut !!")
+        print("Tweepy Stream TimeOut !!")
         return None
 
     def on_connect(self):
-        print("Connection Success!!")
+        print("Tweepy Stream Connection Success!!")
         pass
 
     def on_data(self, _data):
@@ -42,22 +44,29 @@ class StdOutListener(StreamListener):
         # Scratching data
         try:
             print("Count: ", self.__count)
+            
             data = json.loads(raw_data)            
+            
             __text = data['extended_tweet']['full_text']            
             if len(__text) <= var._min_text_len:
                 raise  Exception("Smaller Text!!")
             __lang = data['lang']  
+            
             print("Text: ", __text)
+            
             print("Text Cleaning...")
             # Data Cleaning            
             sleep(self._sleep_time)
             print("Back from sleep...")
+            
             _text = self.__pre._clean(__text)            
             sleep(self._sleep_time)
             print("Back from sleep...")
+            
             _text = self.__pre._emojis(_text, True)            
             sleep(self._sleep_time)        
             print("Back from sleep...")
+            
             # Object of data
             self.__count += 1
             _obj = {"__text": _text, "lang": __lang, "_count": self.__count}
@@ -65,12 +74,13 @@ class StdOutListener(StreamListener):
             sleep(self._sleep_time)
             print("Back from sleep...")
             self.__db._insert(_obj)
+            
         except Exception as e:
-            print({e})            
+            print("Exception: ",{e})            
         return True    
 
     def on_disconnect(self, notice):        
-        print("Closing: ",notice)
+        print("Tweepy Stream Closing: ",notice)
         return None
 
 
@@ -92,13 +102,15 @@ class Tweets(object):
             __stream.filter(track=_track)
             print(threading.current_thread())
         except:
-            print("Fetching Error!!")            
+            print("Fetching Error!!") 
+        print("One Thread Done!!")
+        return None           
 
     def _fetch(self, _track=["Modi", "Covid", "IPL", "Stock Market"]):
         threads = []
         db = MongoDB(key._db_name, key._db_document)  
-        
-        while db._count() <= var._tweet_max_count:
+        _count = db._count()
+        while _count <= var._tweet_max_count:
             thread = threading.Thread(None, target=self.__fetch, args=(_track,), daemon=True)
             thread.start()
             threads.append(thread)         
@@ -108,6 +120,9 @@ class Tweets(object):
                     print("Active Threads: ", threading.active_count())
                     thread.join()
                 threads = []
+                # Database Instance
+                db = MongoDB(key._db_name, key._db_document)  
+                _count = db._count()
         
         # Cleaning Threads
         print("Cleaning Threads: ")        
