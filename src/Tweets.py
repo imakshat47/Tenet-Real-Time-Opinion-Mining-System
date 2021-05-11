@@ -107,10 +107,9 @@ class Tweets(object):
         return None           
 
     def _fetch(self, _track=["Modi", "Covid", "IPL", "Stock Market"]):
-        threads = []
-        db = MongoDB(key._db_name, key._db_document)  
-        _count = db._count()
-        while _count <= var._tweet_max_count:
+        threads = []        
+        while len(threads) < 15:
+            print("Threading...")
             thread = threading.Thread(None, target=self.__fetch, args=(_track,), daemon=True)
             thread.start()
             threads.append(thread)         
@@ -120,9 +119,7 @@ class Tweets(object):
                     print("Active Threads: ", threading.active_count())
                     thread.join()
                 threads = []
-                # Database Instance
-                db = MongoDB(key._db_name, key._db_document)  
-                _count = db._count()
+                # Database Instance                
         
         # Cleaning Threads
         print("Cleaning Threads: ")        
