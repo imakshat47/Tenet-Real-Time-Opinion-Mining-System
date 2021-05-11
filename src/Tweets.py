@@ -11,15 +11,15 @@ import json
 
 # Listen to stream and return it
 class StdOutListener(StreamListener):
-    def __init__(self):
+    def __init__(self, _count):
+        print("Tweepy Stream Connection...")
         super().__init__()
-        self.__count = var._tweet_count
+        self.__count = _count
         self.__max_tweets = var._tweet_max_count
         self.__pre = PreProcess()
         self.__db = MongoDB(key._db_name, key._db_document)         
         self._sleep_time = 0.2  
-        print("Tweepy Stream Connection...")
-        sleep(self._sleep_time)
+        # sleep(self._sleep_time)
 
     def on_error(self, status_code):
         print("Tweepy Stream Error: ", status_code)
@@ -56,23 +56,23 @@ class StdOutListener(StreamListener):
             
             print("Text Cleaning...")
             # Data Cleaning            
-            sleep(self._sleep_time)
-            print("Back from sleep...")
+            # sleep(self._sleep_time)
+            # print("Back from sleep...")
             
             _text = self.__pre._clean(__text)            
-            sleep(self._sleep_time)
-            print("Back from sleep...")
+            # sleep(self._sleep_time)
+            # print("Back from sleep...")
             
             _text = self.__pre._emojis(_text, True)            
-            sleep(self._sleep_time)        
-            print("Back from sleep...")
+            # sleep(self._sleep_time)        
+            # print("Back from sleep...")
             
             # Object of data
             self.__count += 1
             _obj = {"__text": _text, "lang": __lang, "_count": self.__count}
             print(_obj)            
-            sleep(self._sleep_time)
-            print("Back from sleep...")
+            # sleep(self._sleep_time)
+            # print("Back from sleep...")
             self.__db._insert(_obj)
             
         except Exception as e:
@@ -95,10 +95,10 @@ class Tweets(object):
         self.__auth = OAuthHandler(self.__consumer_key, self.__consumer_secret)
         self.__auth.set_access_token(self.__access_token, self.__access_token_secret)        
 
-    def __fetch(self, _track):
+    def __fetch(self, _track, _count):
         try:
             print("Tweets Fetching...")
-            __stream = Stream(self.__auth, StdOutListener())
+            __stream = Stream(self.__auth, StdOutListener(_count))
             __stream.filter(track=_track)
             print(threading.current_thread())
         except:
@@ -108,9 +108,11 @@ class Tweets(object):
 
     def _fetch(self, _track=["Modi", "Covid", "IPL", "Stock Market"]):
         threads = []        
-        while len(threads) < 15:
+        db = MongoDB(key._db_name, key._db_document)         
+        _count = db._count()
+        while _count <= var._tweet_max_count:
             print("Threading...")
-            thread = threading.Thread(None, target=self.__fetch, args=(_track,), daemon=True)
+            thread = threading.Thread(None, target=self.__fetch, args=(_track,_count,), daemon=True)
             thread.start()
             threads.append(thread)         
             
@@ -120,6 +122,8 @@ class Tweets(object):
                     thread.join()
                 threads = []
                 # Database Instance                
+                db = MongoDB(key._db_name, key._db_document)         
+                _count = db._count()
         
         # Cleaning Threads
         print("Cleaning Threads: ")        
