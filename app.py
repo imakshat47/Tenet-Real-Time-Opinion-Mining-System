@@ -4,9 +4,10 @@ from src.Tweets import Tweets
 if __name__ == '__main__':
     try:
         print("App Starts...")
-        tweet = Tweets()
-        # ,"Rotten Tomatoes Reviews"
+        # Fetching Tweets
+        tweet = Tweets()        
         tweet._fetch(_track=["Amazon Product Reviews", "Service Reviews", "Call center Reviews", "Company’s Reputation"])
+        
         # intiating Model
         # model = Model.Model()        
         # calling for heroku
