@@ -5,8 +5,8 @@ if __name__ == '__main__':
     try:
         print("App Starts...")
         # Fetching Tweets
-        tweet = Tweets()        
-        tweet._fetch(_track=["Amazon Product Reviews", "Service Reviews", "Call center Reviews", "Company’s Reputation"])
+        # tweet = Tweets()        
+        # tweet._fetch(_track=["Amazon Product Reviews", "Service Reviews", "Call center Reviews", "Company’s Reputation"])
         
         # intiating Model
         # model = Model.Model()        
