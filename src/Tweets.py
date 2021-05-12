@@ -23,11 +23,11 @@ class StdOutListener(StreamListener):
 
     def on_error(self, status_code):
         print("Tweepy Stream Error: ", status_code)
-        return None
+        pass
 
     def on_timeout(self):
         print("Tweepy Stream TimeOut !!")
-        return None
+        pass
 
     def on_connect(self):
         print("Tweepy Stream Connection Success!!")
