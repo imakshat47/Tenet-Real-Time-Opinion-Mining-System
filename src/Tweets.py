@@ -129,6 +129,10 @@ class Tweets(object):
         while _number:
             print("Threading...")
             sleep(self._sleep_time)
+            _count = db._count()
+            sleep(self._sleep_time)            
+            print("Row Count: ", _count)
+            sleep(self._sleep_time)            
             thread = threading.Thread(None, target=self.__fetch, args=(_track,_count,), daemon=True)
             sleep(self._sleep_time)
             threads.append(thread) 
@@ -140,9 +144,7 @@ class Tweets(object):
                     print("Active Threads: ", threading.active_count())
                     thread.join()
                 threads = []
-            sleep(self._sleep_time)
-            _count = db._count()
-            print("Row Count: ", _count)
+            sleep(self._sleep_time)            
             _number -= 1        
         
         # Cleaning Threads
