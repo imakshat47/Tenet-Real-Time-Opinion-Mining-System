@@ -86,7 +86,7 @@ class StdOutListener(StreamListener):
             
             # Object of data
             self.__count += 1
-            _obj = {"__text": _text, "lang": __lang, "_id": self.__count}
+            _obj = {"__text": _text, "lang": __lang, "_count": self.__count}
             print(_obj)            
             sleep(self._sleep_time)            
             self.__db._insert(_obj)

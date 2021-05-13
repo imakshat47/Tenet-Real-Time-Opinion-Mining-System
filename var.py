@@ -1,5 +1,5 @@
 # text min len
-_min_text_len = 125
+_min_text_len = 120
 
 # Tweets
 _tweet_count = 0
