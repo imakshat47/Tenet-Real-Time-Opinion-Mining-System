@@ -18,16 +18,7 @@ class StdOutListener(StreamListener):
         self.__max_tweets = var._tweet_max_count
         self.__pre = PreProcess()
         self.__db = MongoDB(key._db_name, key._db_document)         
-        self._sleep_time = 0.2  
-        # sleep(self._sleep_time)
-
-    def on_error(self, status_code):
-        print("Tweepy Stream Error: ", status_code)
-        pass
-
-    def on_timeout(self):
-        print("Tweepy Stream TimeOut !!")
-        pass
+        self._sleep_time = 0.2          
 
     def on_connect(self):
         print("Tweepy Stream Connection Success!!")
@@ -52,17 +43,15 @@ class StdOutListener(StreamListener):
                 raise  Exception("Smaller Text!!")
             __lang = data['lang']  
             
-            print("Text: ", __text)
+            print("Text: ", __text)            
             
             print("Text Cleaning...")
             # Data Cleaning            
             # sleep(self._sleep_time)
-            # print("Back from sleep...")
-            
+            # print("Back from sleep...")        
             _text = self.__pre._clean(__text)            
             # sleep(self._sleep_time)
-            # print("Back from sleep...")
-            
+            # print("Back from sleep...")            
             _text = self.__pre._emojis(_text, True)            
             # sleep(self._sleep_time)        
             # print("Back from sleep...")
@@ -77,12 +66,7 @@ class StdOutListener(StreamListener):
             
         except Exception as e:
             print("Exception: ",{e})            
-        return True    
-
-    def on_disconnect(self, notice):        
-        print("Tweepy Stream Closing: ",notice)
-        return None
-
+        return True        
 
 # Fetch Tweets from Tweepy
 class Tweets(object):
@@ -98,6 +82,7 @@ class Tweets(object):
     def __fetch(self, _track, _count):
         try:
             print("Tweets Fetching...")
+            print("Fetch Count: ", _count)
             __stream = Stream(self.__auth, StdOutListener(_count))
             __stream.filter(track=_track)
             print(threading.current_thread())
@@ -108,32 +93,33 @@ class Tweets(object):
 
     def _fetch(self, _track=["Modi", "Covid", "IPL", "Stock Market"]):
         threads = []        
+        
         db = MongoDB(key._db_name, key._db_document)         
         _count = db._count()
+        
         while _count <= var._tweet_max_count:
             print("Threading...")
             thread = threading.Thread(None, target=self.__fetch, args=(_track,_count,), daemon=True)
-            thread.start()
             threads.append(thread)         
+            thread.start()
             
             if len(threads) == var._max_allowed_threads:
                 for thread in threads:
                     print("Active Threads: ", threading.active_count())
                     thread.join()
                 threads = []
-                # Database Instance                
-                db = MongoDB(key._db_name, key._db_document)         
-                _count = db._count()
+            _count = db._count()
+            print("Row Count: ", _count)
         
         # Cleaning Threads
         print("Cleaning Threads: ")        
-        for thread in threads:
-            print("Active Threads: ", threading.active_count())
-            thread.join()
-            
-        if len(threads) == 0:            
-            print("Threads Cleaned.")
-            
-        print("Active Threads: ", threading.active_count())
+        while len(threads):
+            for thread in threads:
+                print("Active Threads: ", threading.active_count())
+                thread.join()
         
+        if len(threads) == 0:    
+            print("Threads Cleaned.")
+        
+        print("Active Threads: ", threading.active_count())
         print("Tweets Collected!!")
