@@ -29,22 +29,22 @@ class StdOutListener(StreamListener):
     def on_exception(self, exception):
         """Called when an unhandled exception occurs."""
         print("Exception: ", exception)
-        return
+        return True
     
     def on_limit(self, track):
         """Called when a limitation notice arrives"""
         print("Limit: ", track)
-        return
+        return True
     
     def on_error(self, status_code):
         """Called when a non-200 status code is returned"""
         print("Error: ", status_code)
-        return False
+        return True
 
     def on_timeout(self):
         """Called when stream connection times out"""        
         print("TimeOut!!")
-        return
+        return True
 
     def on_disconnect(self, notice):
         """Called when twitter sends a disconnect notice
@@ -52,7 +52,7 @@ class StdOutListener(StreamListener):
         https://developer.twitter.com/en/docs/tweets/filter-realtime/guides/streaming-message-types
         """
         print("Disconnect: ", notice)
-        return
+        return True
 
     def on_data(self, _data):
         # Check Condition
@@ -86,7 +86,7 @@ class StdOutListener(StreamListener):
             
             # Object of data
             self.__count += 1
-            _obj = {"__text": _text, "lang": __lang, "_count": self.__count}
+            _obj = {"__text": _text, "lang": __lang, "_id": self.__count}
             print(_obj)            
             sleep(self._sleep_time)            
             self.__db._insert(_obj)
@@ -104,39 +104,46 @@ class Tweets(object):
         self.__access_token = key._auth_token
         self.__access_token_secret = key._auth_secret
         self.__auth = OAuthHandler(self.__consumer_key, self.__consumer_secret)
-        self.__auth.set_access_token(self.__access_token, self.__access_token_secret)        
+        self.__auth.set_access_token(self.__access_token, self.__access_token_secret)       
+        self._sleep_time = random.randint(1, 10) 
 
     def __fetch(self, _track, _count):
         try:
             print("Connecting Tweepy...")            
+            sleep(self._sleep_time)
             __stream = Stream(self.__auth, StdOutListener(_count))
             print("Fetch Count: ", _count)
             __stream.filter(track=_track)
+            sleep(self._sleep_time)
             print(threading.current_thread())
         except:
             print("Fetching Error!!") 
+        sleep(self._sleep_time)
         print("One Thread Done!!")
         return None           
 
-    def _fetch(self, _track=["Modi", "Covid", "IPL", "Stock Market"]):
-        threads = []        
-        
+    def _fetch(self, _track=["Modi", "Covid", "IPL", "Stock Market"], _number = 10):
+        threads = []                
         db = MongoDB(key._db_name, key._db_document)         
-        _count = db._count()
-        
-        while _count <= var._tweet_max_count:
+                
+        while _number:
             print("Threading...")
+            sleep(self._sleep_time)
             thread = threading.Thread(None, target=self.__fetch, args=(_track,_count,), daemon=True)
-            threads.append(thread)         
+            sleep(self._sleep_time)
+            threads.append(thread) 
+            sleep(self._sleep_time)        
             thread.start()
-            
+            sleep(self._sleep_time)
             if len(threads) == var._max_allowed_threads:
                 for thread in threads:
                     print("Active Threads: ", threading.active_count())
                     thread.join()
                 threads = []
+            sleep(self._sleep_time)
             _count = db._count()
             print("Row Count: ", _count)
+            _number -= 1        
         
         # Cleaning Threads
         print("Cleaning Threads: ")        
