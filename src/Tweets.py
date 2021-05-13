@@ -5,6 +5,7 @@ from src.Database import MongoDB
 from src.PreProcess import PreProcess
 from time import sleep
 import threading
+import random
 import key
 import var
 import json
@@ -17,12 +18,41 @@ class StdOutListener(StreamListener):
         self.__count = _count
         self.__max_tweets = var._tweet_max_count
         self.__pre = PreProcess()
-        self.__db = MongoDB(key._db_name, key._db_document)         
-        self._sleep_time = 0.2          
+        self.__db = MongoDB(key._db_name, key._db_document)      
+        self._sleep_time = random.randint(1, 10)
+        print("Sleep Time: ", self._sleep_time)
 
     def on_connect(self):
         print("Tweepy Stream Connection Success!!")
         pass
+    
+    def on_exception(self, exception):
+        """Called when an unhandled exception occurs."""
+        print("Exception: ", exception)
+        return
+    
+    def on_limit(self, track):
+        """Called when a limitation notice arrives"""
+        print("Limit: ", track)
+        return
+    
+    def on_error(self, status_code):
+        """Called when a non-200 status code is returned"""
+        print("Error: ", status_code)
+        return False
+
+    def on_timeout(self):
+        """Called when stream connection times out"""        
+        print("TimeOut!!")
+        return
+
+    def on_disconnect(self, notice):
+        """Called when twitter sends a disconnect notice
+        Disconnect codes are listed here:
+        https://developer.twitter.com/en/docs/tweets/filter-realtime/guides/streaming-message-types
+        """
+        print("Disconnect: ", notice)
+        return
 
     def on_data(self, _data):
         # Check Condition
@@ -37,6 +67,7 @@ class StdOutListener(StreamListener):
             print("Count: ", self.__count)
             
             data = json.loads(raw_data)            
+            sleep(self._sleep_time)
             
             __text = data['extended_tweet']['full_text']            
             if len(__text) <= var._min_text_len:
@@ -47,21 +78,17 @@ class StdOutListener(StreamListener):
             
             print("Text Cleaning...")
             # Data Cleaning            
-            # sleep(self._sleep_time)
-            # print("Back from sleep...")        
+            sleep(self._sleep_time)                    
             _text = self.__pre._clean(__text)            
-            # sleep(self._sleep_time)
-            # print("Back from sleep...")            
+            sleep(self._sleep_time)                        
             _text = self.__pre._emojis(_text, True)            
-            # sleep(self._sleep_time)        
-            # print("Back from sleep...")
+            sleep(self._sleep_time)                    
             
             # Object of data
             self.__count += 1
             _obj = {"__text": _text, "lang": __lang, "_count": self.__count}
             print(_obj)            
-            # sleep(self._sleep_time)
-            # print("Back from sleep...")
+            sleep(self._sleep_time)            
             self.__db._insert(_obj)
             
         except Exception as e:
@@ -81,9 +108,9 @@ class Tweets(object):
 
     def __fetch(self, _track, _count):
         try:
-            print("Tweets Fetching...")
-            print("Fetch Count: ", _count)
+            print("Connecting Tweepy...")            
             __stream = Stream(self.__auth, StdOutListener(_count))
+            print("Fetch Count: ", _count)
             __stream.filter(track=_track)
             print(threading.current_thread())
         except:
