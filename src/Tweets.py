@@ -38,7 +38,7 @@ class StdOutListener(StreamListener):
     
     def on_error(self, status_code):
         """Called when a non-200 status code is returned"""
-        print("Error: ", status_code)
+        print("Error Code: ", status_code)
         return True
 
     def on_timeout(self):
@@ -138,6 +138,7 @@ class Tweets(object):
             threads.append(thread) 
             sleep(self._sleep_time)        
             thread.start()
+            
             sleep(self._sleep_time)
             if len(threads) == var._max_allowed_threads:
                 for thread in threads:
