@@ -65,14 +65,16 @@ class StdOutListener(StreamListener):
         # Scratching data
         try:
             print("Count: ", self.__count)
-            
-            data = json.loads(raw_data)            
-            sleep(self._sleep_time)
-            
-            __text = data['extended_tweet']['full_text']            
+            try:
+                data = json.loads(raw_data)            
+                sleep(self._sleep_time)
+                __lang = data['lang']  
+                __text = data['extended_tweet']['full_text']            
+            except:
+                __text = data['text']
+                
             if len(__text) <= var._min_text_len:
                 raise  Exception("Smaller Text!!")
-            __lang = data['lang']  
             
             print("Text: ", __text)            
             
@@ -132,12 +134,13 @@ class Tweets(object):
             _count = db._count()
             sleep(self._sleep_time)            
             print("Row Count: ", _count)
+            self.__fetch(_track, _count)
             sleep(self._sleep_time)            
-            thread = threading.Thread(None, target=self.__fetch, args=(_track,_count,), daemon=True)
+            # thread = threading.Thread(None, target=self.__fetch, args=(_track,_count,), daemon=True)
             sleep(self._sleep_time)
-            threads.append(thread) 
+            # threads.append(thread) 
             sleep(self._sleep_time)        
-            thread.start()
+            # thread.start()
             
             sleep(self._sleep_time)
             if len(threads) == var._max_allowed_threads:

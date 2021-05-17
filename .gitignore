@@ -5,7 +5,7 @@ _key.py
 __pycache__
 
 # Virtual env
-tenet
+env
 
 # vscode
 .vscode
