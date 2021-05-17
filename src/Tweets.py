@@ -21,7 +21,7 @@ class StdOutListener(StreamListener):
         print("Max: ", self.__max_tweets)
         self.__pre = PreProcess()
         self.__db = MongoDB(key._db_name, key._db_document)      
-        self._sleep_time = random.randint(1, 10)
+        self._sleep_time = random.randint(1, 5)
         print("Sleep Time: ", self._sleep_time)
 
     def on_connect(self):
@@ -92,7 +92,7 @@ class StdOutListener(StreamListener):
             self.__count += 1
             print("Count: ", self.__count)
             
-            if len(__text) <= var._min_text_len:
+            if len(_text) <= var._min_text_len:
                 raise  Exception("Smaller Text!!")
             
             _obj = {"__text": _text, "lang": __lang, "_count": self.__count}
