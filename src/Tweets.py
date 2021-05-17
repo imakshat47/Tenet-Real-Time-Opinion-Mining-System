@@ -17,7 +17,8 @@ class StdOutListener(StreamListener):
         print("Tweepy Stream Connection...")
         super().__init__()
         self.__count = _count
-        self.__max_tweets = var._tweet_max_count
+        self.__max_tweets =  _count + var._tweet_max_count
+        print("Max: ", self.__max_tweets)
         self.__pre = PreProcess()
         self.__db = MongoDB(key._db_name, key._db_document)      
         self._sleep_time = random.randint(1, 10)
@@ -89,9 +90,11 @@ class StdOutListener(StreamListener):
             
             # Object of data
             self.__count += 1
-            print(self.__count)
+            print("Count: ", self.__count)
+            
             if len(__text) <= var._min_text_len:
                 raise  Exception("Smaller Text!!")
+            
             _obj = {"__text": _text, "lang": __lang, "_count": self.__count}
             print(_obj)            
             sleep(self._sleep_time)            
@@ -138,6 +141,8 @@ class Tweets(object):
             _count = db._count()
             sleep(self._sleep_time)            
             print("Row Count: ", _count)
+            print("Number: ",_number)   
+            print(threading.current_thread()) 
             self.__fetch(_track, _count)
             sleep(self._sleep_time)            
             # thread = threading.Thread(None, target=self.__fetch, args=(_track,_count,), daemon=True)
@@ -154,7 +159,7 @@ class Tweets(object):
                 threads = []
             sleep(self._sleep_time)            
             _number -= 1    
-            print(_number)    
+            print("Number: ",_number)    
         
         # Cleaning Threads
         print("Cleaning Threads: ")        
