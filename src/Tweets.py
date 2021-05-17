@@ -1,3 +1,4 @@
+import tweepy
 from tweepy import Stream
 from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
@@ -88,6 +89,9 @@ class StdOutListener(StreamListener):
             
             # Object of data
             self.__count += 1
+            print(self.__count)
+            if len(__text) <= var._min_text_len:
+                raise  Exception("Smaller Text!!")
             _obj = {"__text": _text, "lang": __lang, "_count": self.__count}
             print(_obj)            
             sleep(self._sleep_time)            
@@ -149,7 +153,8 @@ class Tweets(object):
                     thread.join()
                 threads = []
             sleep(self._sleep_time)            
-            _number -= 1        
+            _number -= 1    
+            print(_number)    
         
         # Cleaning Threads
         print("Cleaning Threads: ")        
